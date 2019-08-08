@@ -1,0 +1,54 @@
+{
+  "name": "rust-perlin-wasm-test-2",
+  "version": "0.1.0",
+  "description": "Using wasm-pack to play with Perlin noise.",
+  "main": "index.js",
+  "scripts": {
+    "lint:src": "$npm_execpath eslint src/**/*.ts",
+    "lint:test": "$npm_execpath eslint test/**/*.ts",
+    "lint": "$npm_execpath run lint:src && $npm_execpath run lint:test",
+    "test": "ts-node ./node_modules/tape/bin/tape test/**/*.spec.ts",
+    "serve": "$npm_execpath webpack-dev-server --open --config webpack.dev.js",
+    "build": "$npm_execpath webpack --config webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minagawah/rust-perlin-wasm-test-2.git"
+  },
+  "keywords": [
+    "wasm",
+    "rust",
+    "noise",
+    "perlin"
+  ],
+  "author": "minagawah <minagawa@tokyo800.jp>",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/minagawah/rust-perlin-wasm-test-2/issues"
+  },
+  "homepage": "https://github.com/minagawah/rust-perlin-wasm-test-2#readme",
+  "devDependencies": {
+    "@types/tape": "^4.2.33",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "@wasm-tool/wasm-pack-plugin": "^1.0.0",
+    "autoprefixer": "^9.6.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.1.0",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "license-webpack-plugin": "^2.1.1",
+    "mini-css-extract-plugin": "^0.8.0",
+    "postcss-loader": "^3.0.0",
+    "style-loader": "^1.0.0",
+    "tape": "^4.11.0",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2",
+    "webpack-merge": "^4.2.1"
+  }
+}
