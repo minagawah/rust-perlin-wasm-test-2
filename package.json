@@ -1,6 +1,6 @@
 {
   "name": "rust-perlin-wasm-test-2",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Using wasm-pack to play with Perlin noise.",
   "main": "index.js",
   "scripts": {
@@ -50,5 +50,8 @@
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2",
     "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {
+    "debounce-ctx": "^1.0.2"
   }
 }

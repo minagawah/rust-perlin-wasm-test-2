@@ -11,7 +11,7 @@ Using wasm-pack to play with Perlin noise.
 [5. LICENSE](#license)  
 
 
-**&gt;&gt;&gt; Work in Progress: Still haven't implemented the particles. It just alerts you with a greeting message**
+**&gt;&gt;&gt; Work in Progress: Still haven't added `web-sys`, `js-sys`, and `futures`.**
 
 
 <a id="about"></a>
@@ -104,6 +104,9 @@ yarn add file-loader --dev
 
 # So, it looks like this:
 yarn add typescript webpack webpack-cli webpack-dev-server ts-loader html-webpack-plugin @wasm-tool/wasm-pack-plugin webpack-merge eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin tape @types/tape copy-webpack-plugin clean-webpack-plugin license-webpack-plugin style-loader css-loader postcss-loader autoprefixer mini-css-extract-plugin file-loader --dev
+
+# For service use.
+yarn add debounce-ctx
 ```
 
 For Cargo:
@@ -118,11 +121,6 @@ cd wasm-noise
 rm -fR .git
 rm -f LICENSE_APACHE
 mv LICENSE_MIT LICENSE
-vi Cargo.toml
-----------------------------
-[dev-dependencies]
-wasm-bindgen-test = "^0.2"
-----------------------------
 vi .gitignore
 -----------------------
 # wasm-pack related
@@ -130,6 +128,30 @@ bin/
 pkg/
 wasm-pack.log
 -----------------------
+
+
+vi Cargo.toml
+--------------------------------------------------
+14c14,15
+< wasm-bindgen = "0.2"
+---
+> wasm-bindgen = "^0.2"
+> noise = "0.5.1"
+30c31,37
+< wasm-bindgen-test = "0.2"
+---
+> wasm-bindgen-test = "^0.2"
+> 
+> [profile.dev]
+> # Optimizing for dev (link-time-optimization).
+> lto = true
+> # We want speed rather than file size.
+> opt-level = 3
+34a42,43
+> # Optimizing for release (link-time-optimization).
+> lto = true
+--------------------------------------------------
+
 cargo build
 ```
 
