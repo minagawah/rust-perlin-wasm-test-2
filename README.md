@@ -17,6 +17,10 @@ Using wasm-pack to play with Perlin noise.
 <a id="about"></a>
 ## 1. About
 
+[View Demo](http://tokyo800.jp/minagawah/rust-perlin-wasm-test-2/)
+
+![screenshot](screenshot.png "Screenshot")
+
 While [the previous sample](https://github.com/minagawah/rust-perlin-wasm-test)
 used `nightly` toolchain to build `*.wasm` without much effort.
 This time, I used [wasm-pack](https://github.com/rustwasm/wasm-pack)
