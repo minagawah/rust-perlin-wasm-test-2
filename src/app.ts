@@ -76,6 +76,9 @@ const step = () => {
 
 (async () => {
   try {
+    const noise: any = await WasmNoiseFactory();
+    noise.hello_web_sys_console();
+
     canvas = <HTMLCanvasElement> document.getElementById('canvas');
 
     flo = await createFlows(canvas);

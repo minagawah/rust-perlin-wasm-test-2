@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 module.exports = {
   entry: {
@@ -17,9 +16,6 @@ module.exports = {
       chunks: ['vendor', 'app'],
       filename: 'index.html',
       template: './src/index.html'
-    }),
-    new WasmPackPlugin({
-      crateDirectory: './wasm-noise',
     }),
     new CopyWebpackPlugin([
       {

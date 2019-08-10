@@ -1,4 +1,5 @@
 const merge = require('webpack-merge');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
@@ -13,6 +14,10 @@ module.exports = merge(common, {
     minimize: true,
   },
   plugins: [
+    new WasmPackPlugin({
+      crateDirectory: './wasm-noise',
+      forceMode: 'development',
+    }),
     new LicenseWebpackPlugin(),
   ],
   module: {

@@ -11,15 +11,12 @@ Using wasm-pack to play with Perlin noise.
 [5. LICENSE](#license)  
 
 
-**&gt;&gt;&gt; Work in Progress: Still haven't added `web-sys`, `js-sys`, and `futures`.**
-
-
-<a id="about"></a>
-## 1. About
-
 [View Demo](http://tokyo800.jp/minagawah/rust-perlin-wasm-test-2/)
 
 ![screenshot](screenshot.png "Screenshot")
+
+<a id="about"></a>
+## 1. About
 
 While [the previous sample](https://github.com/minagawah/rust-perlin-wasm-test)
 used `nightly` toolchain to build `*.wasm` without much effort.
@@ -42,12 +39,13 @@ where they differ slightly in its features and of how they manage projects:
 
 ### (b) [rust-webpack](https://github.com/rustwasm/rust-webpack-template)
 - JS sources managed in `js` and Rust in `src`.
-- Already has `web-sys`, `js-sys`, and `futures` setups.
+- Already has [web-sys](https://rustwasm.github.io/wasm-bindgen/web-sys/index.html) setups.
+- Also allows you to test using [js-sys](https://docs.rs/js-sys/0.3.25/js_sys/) and [futures](https://docs.rs/futures/0.1.28/futures/).
 - Uses `wasm-pack-plugin` to build Cargo, and builds to right under the root.
 - The generated `pkg/index.js` bridges to `*.wasm`, and no need for `bootstrap.js` (as it does in `wasm-pack`) to worry free of asynchronous issues.
 
 
-```
+```shell
 # Try it yourself
 npm init wasm-app a1;
 npm init rust-webpack a2;
@@ -61,7 +59,7 @@ Here is the idea:
 2. Use `wasm-pack-plugin`, so that worries nothing about asynchronous issues (no `bootstrap.js`).
 3. Use `cargo-generate` to create my own Cargo project under the root directory.
 4. Use `html-webpack-plugin` (and other handy Webpack plugins) to dynamically generates all the HTMNL (or CSS).
-5. Add supports for `web-sys`, `js-sys`, and `futures`.
+5. Add supports for `web-sys`.
 
 
 
@@ -74,7 +72,7 @@ You also need [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/).
 
 For NPM:
 
-```
+```shell
 # Git clone `rust-perlin-wasm-test-2` which I created on Github.
 git clone https://github.com/minagawah/rust-perlin-wasm-test-2.git;
 
@@ -115,7 +113,7 @@ yarn add debounce-ctx
 
 For Cargo:
 
-```
+```shell
 # Use `cargo-generate` to create a new Cargo project (called `wasm-noise`)
 cd rust-perlin-wasm-test-2
 cargo generate --git https://github.com/rustwasm/wasm-pack-template --name wasm-noise
@@ -132,38 +130,87 @@ bin/
 pkg/
 wasm-pack.log
 -----------------------
+```
 
+`wasm-noise/Cargo.toml`:
 
-vi Cargo.toml
---------------------------------------------------
-14c14,15
-< wasm-bindgen = "0.2"
----
-> wasm-bindgen = "^0.2"
-> noise = "0.5.1"
-30c31,37
-< wasm-bindgen-test = "0.2"
----
-> wasm-bindgen-test = "^0.2"
-> 
-> [profile.dev]
-> # Optimizing for dev (link-time-optimization).
-> lto = true
-> # We want speed rather than file size.
-> opt-level = 3
-34a42,43
-> # Optimizing for release (link-time-optimization).
-> lto = true
---------------------------------------------------
+```diff
+[dependencies]
+-wasm-bindgen = "0.2"
++wasm-bindgen = "^0.2"
++noise = "0.5.1"
 
-cargo build
++[dependencies.web-sys]
++version = "0.3.22"
++features = ["console"]
+
+[dev-dependencies]
+-wasm-bindgen-test = "0.2"
++wasm-bindgen-test = "^0.2"
++futures = "0.1.27"
++js-sys = "0.3.22"
++wasm-bindgen-futures = "0.3.22"
+
++[profile.dev]
++lto = true
++opt-level = 3
+
+[profile.release]
+opt-level = "s"
++lto = true
+```
+
+`wasm-noise/src/lib.rs`:
+
+```diff
++extern crate web_sys;
++extern crate noise;
+ mod utils;
+ 
+ use wasm_bindgen::prelude::*;
++use web_sys::console;
++use noise::{NoiseFn, Perlin, Seedable};
+ 
++#[wasm_bindgen]
++extern "C" {
++    #[wasm_bindgen(js_namespace = console)]
++    fn log(s: &str);
++
++    #[wasm_bindgen(js_namespace = console, js_name = log)]
++    fn log_u32(a: u32);
++
++    #[wasm_bindgen(js_namespace = console, js_name = log)]
++    fn log_many(a: &str, b: &str);
++}
+
++macro_rules! console_log {
++    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
++}
+
++#[wasm_bindgen]
++pub extern fn hello_web_sys_console() {
++    console_log!("Hello {}! using macro", "world");
++    console::log_1(&"Hello world! using web-sys".into());
++}
+
++#[wasm_bindgen]
++pub extern fn perlin(x: f32, y: f32, z: f32) -> f64 {
++    let perlin = Perlin::new();
++    perlin.set_seed(0);
++    perlin.get([x as f64, y as f64, z as f64])
++}
+```
+
+```shell
+###cargo build
+wasm-pack build
 ```
 
 
 <a id="run"></a>
 ## 3. Run
 
-```
+```shell
 # dev
 yarn serve
 
@@ -183,7 +230,7 @@ Simply uploading WASM file to the remote server won't work.
 Your server must send a MIME header specific to the WASM file.  
 SSH your hosting server and simply set to `.htaccess`:
 
-```
+```apache_conf
 AddType application/wasm .wasm
 ```
 

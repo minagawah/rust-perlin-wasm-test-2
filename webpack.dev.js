@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 const autoprefixer = require('autoprefixer');
 const common = require('./webpack.common.js');
 
@@ -14,6 +15,10 @@ module.exports = merge(common, {
     minimize: false,
   },
   plugins: [
+    new WasmPackPlugin({
+      crateDirectory: './wasm-noise',
+      forceMode: 'development',
+    }),
     new webpack.HotModuleReplacementPlugin()
   ],
   module: {
