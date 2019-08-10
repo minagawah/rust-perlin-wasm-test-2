@@ -11,9 +11,9 @@ Using wasm-pack to play with Perlin noise.
 [5. LICENSE](#license)  
 
 
-[View Demo](http://tokyo800.jp/minagawah/rust-perlin-wasm-test-2/)
-
 ![screenshot](screenshot.png "Screenshot")
+
+[View Demo](http://tokyo800.jp/minagawah/rust-perlin-wasm-test-2/)
 
 <a id="about"></a>
 ## 1. About
@@ -42,7 +42,7 @@ where they differ slightly in its features and of how they manage projects:
 - Already has [web-sys](https://rustwasm.github.io/wasm-bindgen/web-sys/index.html) setups.
 - Also allows you to test using [js-sys](https://docs.rs/js-sys/0.3.25/js_sys/) and [futures](https://docs.rs/futures/0.1.28/futures/).
 - Uses `wasm-pack-plugin` to build Cargo, and builds to right under the root.
-- The generated `pkg/index.js` bridges to `*.wasm`, and no need for `bootstrap.js` (as it does in `wasm-pack`) to worry free of asynchronous issues.
+- Directly imports (dynamically) `{YOUR_CRATE_DIRECTORY}/pkg/index.js` which loads `*.wasm`. No `bootstrap.js` is needed (as it does in `wasm-pack`) and worry free of asynchronous issues.
 
 
 ```shell
@@ -202,13 +202,17 @@ opt-level = "s"
 ```
 
 ```shell
-###cargo build
-wasm-pack build
+###(not needed) cargo build
+###(not needed) wasm-pack build
 ```
 
 
 <a id="run"></a>
 ## 3. Run
+
+Running the bellow, runs `wasm-pack`,
+builds `{YOUR_CRATE_DIRECTORY}/target/wasm32-unknown-unknown`,
+and prepares `{YOUR_CRATE_DIRECTORY}/pkg/*` for you.
 
 ```shell
 # dev

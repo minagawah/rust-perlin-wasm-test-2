@@ -16,7 +16,7 @@ module.exports = merge(common, {
   plugins: [
     new WasmPackPlugin({
       crateDirectory: './wasm-noise',
-      forceMode: 'development',
+      forceMode: 'production',
     }),
     new LicenseWebpackPlugin(),
   ],
