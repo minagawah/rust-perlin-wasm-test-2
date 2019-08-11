@@ -39,7 +39,7 @@ let lt = 0;
 let et = 0;
 let tick = 0;
 
-const reset = () => {
+const reset = async (): Promise<void> => {
   print('+++++++ reset()');
   const { width, height }: Rect = getCanvasSize();
   print(`${width}x${height}`);
@@ -49,7 +49,7 @@ const reset = () => {
 
   const num: number = width * height / 900;
   // const num = 60;
-  flo.reset({ num, width, height });
+  await flo.reset({ num, width, height });
 };
 
 let suspend = false;
@@ -86,7 +86,7 @@ const step = () => {
     (window as any).addEventListener('resize', debounce(reset, 800), false);
     (window as any).addEventListener('click', reset, false);
 
-    reset();
+    await reset();
     step();
   } catch (err) {
     console.error(err);

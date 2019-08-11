@@ -46,6 +46,56 @@ macro_rules! console_log {
 // }
 
 #[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct Slot {
+    x: u32,
+    y: u32
+}
+
+#[wasm_bindgen]
+impl Slot {
+    pub fn x(&self) -> u32 {
+        self.x
+    }
+    pub fn y(&self) -> u32 {
+        self.y
+    }
+}
+
+#[wasm_bindgen]
+pub struct Field {
+    rows: u32,
+    cols: u32,
+    slots: Vec<Slot>
+}
+
+#[wasm_bindgen]
+impl Field {
+    fn get_index(&self, row: u32, col: u32) -> usize {
+        (row * self.rows + col) as usize
+    }
+    pub fn create(rows: u32, cols: u32) -> Field {
+        let slots = (0..rows * cols).map(|i| {
+            Slot { x: 0, y: 0 }
+        }).collect();
+        Field {
+            rows,
+            cols,
+            slots
+        }
+    }
+    pub fn rows(&self) -> u32 {
+        self.rows
+    }
+    pub fn cols(&self) -> u32 {
+        self.cols
+    }
+    pub fn slots(&self) -> *const Slot {
+        self.slots.as_ptr()
+    }
+}
+
+#[wasm_bindgen]
 extern {
     fn alert(s: &str);
 }

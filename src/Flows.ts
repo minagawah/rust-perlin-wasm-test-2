@@ -6,6 +6,8 @@ import Victor from 'victor';
 import { Rect, Particle } from './types';
 import { rand, withinRect } from './lib/util';
 import WasmNoiseFactory from './lib/WasmNoise';
+import { getIndex, memory as getWasmMemory } from './lib/WasmNoise';
+import { Field as FieldType, Slot as SlotType } from '../wasm-noise/pkg/index.d.ts';
 
 Victor.prototype.setAngle = function (angle) {
   const length = this.length();
@@ -41,6 +43,8 @@ let noise;
  */
 export default async function factory (canvas: HTMLCanvasElement) {
   const noise: any = await WasmNoiseFactory();
+  // const { Field, __wbindgen_string_new } = noise || {};
+  const { Field } = noise || {};
 
   // @todo
   // TS2339: Property 'strokeStyle' does not exist on type 'HTMLCanvasElement'.
@@ -55,6 +59,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
   let zin = 0;
   let particles: any[] = [];
   let field: any[] = [];
+  let fieldx: FieldType;
 
   // --------------------------
   // Reset
@@ -87,7 +92,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
    * @param {number} [o.width] Canvas width
    * @param {number} [o.height] Canvas height
    */
-  const reset = (args: any = {}) => {
+  const reset = async (args: any = {}) => {
     print('+++++++ reset()');
     const { num, width: w, height: h }: { num: number, width: number, height: number } = args;
 
@@ -100,6 +105,30 @@ export default async function factory (canvas: HTMLCanvasElement) {
 
     cols = Math.round(width / zsize) + 1;
     rows = Math.round(height / zsize) + 1;
+
+    // fieldx = <FieldType> Field.create(rows, cols);
+    // if (fieldx) {
+    //   const memory = await getWasmMemory();
+    //   const { buffer } = memory || {};
+    //   const pointer = fieldx.slots();
+    //   const slots = new Uint8Array(buffer, pointer, rows * cols);
+    //   const row = 1;
+    //   const col = 1;
+    //   const index = getIndex({ rows, row, col });
+    //   print(`[row] ${row} [col] ${col}`);
+    //   print(`pointer: ${pointer}`);
+    //   console.log('buffer', buffer);
+    //   console.log('slots', slots);
+    //   const slot: SlotType = slots[index];
+    //   if (slot) {
+    //     print(`Found a slot for: ${index}`);
+    //     const x = slot.x();
+    //     const y = slot.y();
+    //     print(`--> (${x}, ${y})`);
+    //   } else {
+    //     print(`No slots for: ${index}`);
+    //   }
+    // }
 
     resetParticles(num);
     resetField();
@@ -160,12 +189,14 @@ export default async function factory (canvas: HTMLCanvasElement) {
   
   const drawField = (): void => {
     ctx.strokeStyle = 'hsla(0, 0%, 100%, 0.4)';
+    // const magnify = 2;
+    const magnify = 7;
     for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
         const px0 = x * zsize;
         const py0 = y * zsize;
-        const px1 = px0 + field[x][y].x * zsize * 2;
-        const py1 = py0 + field[x][y].y * zsize * 2;
+        const px1 = px0 + field[x][y].x * zsize * magnify;
+        const py1 = py0 + field[x][y].y * zsize * magnify;
         ctx.beginPath();
         ctx.moveTo(px0, py0);
         ctx.lineTo(px1, py1);
