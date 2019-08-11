@@ -126,7 +126,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
   const updateField = (): void => {
     for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
-        const p: Vec2 = field[x][y];
+        const p: Victor = field[x][y];
         p.setAngle(getPerlinAngle(x, y, zin));
         p.setLength(getPerlinDist(x, y, zin));
       }
@@ -219,7 +219,7 @@ function createParticle ({ ctx, index, width, height }: CreateParticle): Particl
   
   return {
     pos,
-    update: (v: Vec2) => {
+    update: (v: Victor) => {
       if (v) {
         vel.add(v);
       }
