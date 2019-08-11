@@ -109,6 +109,7 @@ yarn add typescript webpack webpack-cli webpack-dev-server ts-loader html-webpac
 
 # For service use.
 yarn add debounce-ctx
+yarn add victor
 ```
 
 For Cargo:

@@ -2,11 +2,24 @@
  * Based on Johan Karlsson's blog post:
  * https://codepen.io/DonKarlssonSan/post/particles-in-simplex-noise-flow-field
  */
-import { Vec2 } from './Vec2';
+import Victor from 'victor';
 import { Rect, Particle } from './types';
 import { rand, withinRect } from './lib/util';
 import WasmNoiseFactory from './lib/WasmNoise';
 
+Victor.prototype.setAngle = function (angle) {
+  const length = this.length();
+  this.x = Math.cos(angle) * length;
+  this.y = Math.sin(angle) * length;
+};
+
+Victor.prototype.setLength = function (length) {
+  const angle = this.angle();
+  this.x = Math.cos(angle) * length;
+  this.y = Math.sin(angle) * length;
+};
+
+const ZONE_SIZE = 18;
 const PARTICLE_SIZE = 3;
 
 const int = Math.trunc;
@@ -33,8 +46,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
   // TS2339: Property 'strokeStyle' does not exist on type 'HTMLCanvasElement'.
   const ctx: any = canvas && (canvas as any).getContext('2d');
 
-  // const size = 15;
-  const size = 20;
+  const zsize = ZONE_SIZE;
   
   let width = 0;
   let height = 0;
@@ -63,7 +75,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
     for (let x = 0; x < cols; x++) {
       field[x] = new Array(rows);
       for (let y = 0; y < rows; y++) {
-        field[x][y] = new Vec2(0, 0);
+        field[x][y] = new Victor(0, 0);
       }
     }
   };
@@ -86,8 +98,8 @@ export default async function factory (canvas: HTMLCanvasElement) {
     ctx.strokeStyle = 'hsla(0, 0%, 100%, 1)';
     ctx.fillStyle = 'hsla(0, 0%, 100%, 0.9)';
 
-    cols = Math.round(width / size) + 1;
-    rows = Math.round(height / size) + 1;
+    cols = Math.round(width / zsize) + 1;
+    rows = Math.round(height / zsize) + 1;
 
     resetParticles(num);
     resetField();
@@ -98,19 +110,17 @@ export default async function factory (canvas: HTMLCanvasElement) {
   // --------------------------
 
   // Perlin noise to set new "angle" for each in the field.
-  // const angleZoom = (n: number): number => n/20;
-  const angleZoom = (n: number): number => n/100;
+  const angleZoom = (n: number): number => n/20;
+  // const angleZoom = (n: number): number => n/50;
   const getPerlinAngle = (x: number, y: number, zin: number): number => {
-    return noise.perlin(angleZoom(x), angleZoom(y), zin) * Math.PI * 2;
+    return noise.simplex(angleZoom(x), angleZoom(y), zin) * Math.PI * 2;
   };
 
   // Perlin noise to set new "length" for each in the field.
-  // const distOffset = 40000;
-  const distOffset = 10;
-  // const disZoom = (n: number): number => n/40 + distOffset;
-  const disZoom = (n: number): number => n/80 + distOffset;
+  const disZoom = (n: number): number => n/40 + 40000;
+  // const disZoom = (n: number): number => n/10 + 40000;
   const getPerlinDist = (x: number, y: number, zin: number): number => {
-    return noise.perlin(disZoom(x), disZoom(y), zin) * 0.5;
+    return noise.simplex(disZoom(x), disZoom(y), zin);
   };
 
   const updateField = (): void => {
@@ -121,17 +131,15 @@ export default async function factory (canvas: HTMLCanvasElement) {
         p.setLength(getPerlinDist(x, y, zin));
       }
     }
-    // zin += 0.001;
-    zin += 0.00015;
   };
 
   const updateParticles = (): void => {
     const rect: Rect = { x: 0, y: 0, width: cols, height: rows };
     particles.forEach((p: Particle): void => {
-      const copy = p.pos.clone().divide(size, size); // (x, y)
-      let v: Vec2;
+      const copy = p.pos.clone().divide({ x: zsize, y: zsize }); // (x, y)
+      let v: Victor;
       if (withinRect(copy, rect)) {
-        v = <Vec2> field[int(copy.x)][int(copy.y)];
+        v = <Victor> field[int(copy.x)][int(copy.y)];
       }
       p.update(v);
     });
@@ -143,6 +151,7 @@ export default async function factory (canvas: HTMLCanvasElement) {
   const update = (): void => {
     updateField();
     updateParticles();
+    zin += 0.001;
   };
 
   // --------------------------
@@ -153,10 +162,10 @@ export default async function factory (canvas: HTMLCanvasElement) {
     ctx.strokeStyle = 'hsla(0, 0%, 100%, 0.4)';
     for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
-        const px0 = x * size;
-        const py0 = y * size;
-        const px1 = px0 + field[x][y].x * size * 2;
-        const py1 = py0 + field[x][y].y * size * 2;
+        const px0 = x * zsize;
+        const py0 = y * zsize;
+        const px1 = px0 + field[x][y].x * zsize * 2;
+        const py1 = py0 + field[x][y].y * zsize * 2;
         ctx.beginPath();
         ctx.moveTo(px0, py0);
         ctx.lineTo(px1, py1);
@@ -204,9 +213,9 @@ export default async function factory (canvas: HTMLCanvasElement) {
  */
 function createParticle ({ ctx, index, width, height }: CreateParticle): Particle {
 
-  const size = PARTICLE_SIZE;
-  const pos = new Vec2(rand(0, width), rand(0, height));
-  const vel = new Vec2(rand(-1, 1), rand(-1, 1));
+  const psize = PARTICLE_SIZE;
+  const pos = new Victor(rand(0, width), rand(0, height));
+  const vel = new Victor(rand(-1, 1), rand(-1, 1));
   
   return {
     pos,
@@ -216,22 +225,22 @@ function createParticle ({ ctx, index, width, height }: CreateParticle): Particl
       }
       pos.add(vel);
 
-      if (vel.getLength() > 2) {
+      if (vel.length() > 2) {
         vel.setLength(2);
       }
       if (pos.x > width) {
         pos.x = 0;
-      } else if (pos.x < -size) {
+      } else if (pos.x < -psize) {
         pos.x = width - 1;
       }
       if (pos.y > height) {
         pos.y = 0;
-      } else if (pos.y < -size) {
+      } else if (pos.y < -psize) {
         pos.y = height - 1;
       }
     },
     draw: () => {
-      ctx.fillRect(pos.x, pos.y, size, size);
+      ctx.fillRect(pos.x, pos.y, psize, psize);
     }
   };
 }

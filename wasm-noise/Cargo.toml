@@ -49,6 +49,8 @@ lto = true
 opt-level = 3
 
 [profile.release]
-# Tell `rustc` to optimize for small code size.
-opt-level = "s"
+##### Tell `rustc` to optimize for small code size.
+#####opt-level = "s"
+# go for performance
+opt-level = 3
 lto = true
