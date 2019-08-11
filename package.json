@@ -1,6 +1,6 @@
 {
   "name": "rust-perlin-wasm-test-2",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Using wasm-pack to play with Perlin noise.",
   "main": "index.js",
   "scripts": {
