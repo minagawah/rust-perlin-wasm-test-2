@@ -19,7 +19,8 @@ module.exports = {
       "rules": {
         "@typescript-eslint/explicit-function-return-type": [0],
         "@typescript-eslint/indent": ["error", 2],
-        "@typescript-eslint/no-var-requires": [1]
+        "@typescript-eslint/no-var-requires": [1],
+        "@typescript-eslint/no-explicit-any": [0],
       }
     }
   ],

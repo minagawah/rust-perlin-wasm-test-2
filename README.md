@@ -8,8 +8,8 @@ Using wasm-pack to play with Perlin noise.
 [3. Run](#run)  
 [4. Notes](#notes)  
 &nbsp; [4-1. MIME TYPE](#notes-mime)  
+&nbsp; [4-2. Typescript: Dynamic Import](#notes-typescript-dynamic)  
 [5. LICENSE](#license)  
-
 
 ![screenshot](screenshot.png "Screenshot")
 
@@ -22,7 +22,7 @@ While [the previous sample](https://github.com/minagawah/rust-perlin-wasm-test)
 used `nightly` toolchain to build `*.wasm` without much effort.
 This time, I used [wasm-pack](https://github.com/rustwasm/wasm-pack)
 (via [@wasm-tool/wasm-pack-plugin](https://github.com/wasm-tool/wasm-pack-plugin))
-to bridge between WASM and NPM.
+to bridge between WASM and Webpack.
 
 As you visit [wasm-pack](https://github.com/rustwasm/wasm-pack) website,
 the official document gives you 2 options to either use
@@ -157,7 +157,8 @@ wasm-pack.log
 +opt-level = 3
 
 [profile.release]
-opt-level = "s"
+-opt-level = "s"
++opt-level = 3
 +lto = true
 ```
 
@@ -205,6 +206,8 @@ opt-level = "s"
 ```shell
 ###(not needed) cargo build
 ###(not needed) wasm-pack build
+
+# See `wasm-pack-plugin` takes care of everything!
 ```
 
 
@@ -238,6 +241,63 @@ SSH your hosting server and simply set to `.htaccess`:
 ```apache_conf
 AddType application/wasm .wasm
 ```
+
+<a id="notes-typescript-dynamic"></a>
+## 4-2. TypeScript: Dynamic Import Syntax
+
+While the current settings works just fine,
+when it comes to dynamically import a module,
+TypeScript does not seem to like a module
+which does not yet exist.
+
+In `src/lib/WasmNoise.ts`, I have the following code:  
+(which is currently commented out)
+
+```js
+export const memory: Function = async (): Promise<any> => {
+  const wasm = await import('../../wasm-noise/pkg/index_bg.wasm') || {};
+  const memory: any = wasm.memory || {};
+  return memory;
+};
+```
+
+Since `wasm-noise/pkg/index_bg.wasm` is generated
+using `wasm-pack-plugin` (via `wasm-pack`),
+it does not yet exist when TypeScript trys
+to look into the module content,
+and gives me the following error:
+
+```shell
+[tsl] ERROR in /{...}/rust-perlin-wasm-test-2/src/lib/WasmNoise.ts(8,29)
+      TS2307: Cannot find module '../../wasm-noise/pkg/index_bg.wasm'
+```
+
+Henceforth, I am currently commenting out the mentioned code.  
+When I actually decides to use the dynamic import in the future,
+I sort of have a workaround (but not quite solving the issue)
+which is to add `transpileOnly` to `ts-loader` in webpack config:
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.tsx?$/,
+      loader: 'ts-loader',
+      exclude: /node_modules/,
+      options: {
+        transpileOnly: true,
+        compilerOptions: {
+          'sourceMap': true,
+        },
+      }
+    },
+```
+
+The drawback, however, of having `transpileOnly`
+is that you no longer have TypeScript warns you
+of anything at all. By adding `transpileOnly`,
+you are basically ignoring the issue...
+
 
 
 <a id="license"></a>

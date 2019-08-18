@@ -5,6 +5,7 @@
     "target": "es5",
     "module": "esnext",
     "strict": true,
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "esModuleInterop": true
   }

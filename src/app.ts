@@ -18,8 +18,13 @@ const print = (s: string): void => console.log(`[app] ${s}`);
 //     function (f: Function): void { (window as any).setTimeout(f, 1E3/60) }
 // }();
 
+interface CanvasSizeType {
+  width: number;
+  height: number;
+}
+
 // Checks out the container size, and calculates the same for canvas.
-const getCanvasSize = (): Rect => {
+const getCanvasSize = (): CanvasSizeType => {
   const maxWidth = 920;
   const body = document.body;
   const cont = document.getElementById(CONTAINER_ID);
@@ -41,7 +46,7 @@ let tick = 0;
 
 const reset = async (): Promise<void> => {
   print('+++++++ reset()');
-  const { width, height }: Rect = getCanvasSize();
+  const { width, height }: CanvasSizeType = getCanvasSize();
   print(`${width}x${height}`);
 
   canvas.width = width;

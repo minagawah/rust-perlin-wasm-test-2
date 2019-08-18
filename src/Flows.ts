@@ -6,7 +6,12 @@ import Victor from 'victor';
 import { Rect, Particle } from './types';
 import { rand, withinRect } from './lib/util';
 import WasmNoiseFactory from './lib/WasmNoise';
-import { getIndex, memory as getWasmMemory } from './lib/WasmNoise';
+// @todo
+// TS2307: Cannot find module '../../wasm-noise/pkg/index_bg.wasm'.
+// --------------------------------------------------------------
+// import { getIndex, memory as getWasmMemory } from './lib/WasmNoise';
+// --------------------------------------------------------------
+import { getIndex } from './lib/WasmNoise';
 import { Field as FieldType, Slot as SlotType } from '../wasm-noise/pkg/index.d.ts';
 
 Victor.prototype.setAngle = function (angle) {
@@ -44,7 +49,8 @@ let noise;
 export default async function factory (canvas: HTMLCanvasElement) {
   const noise: any = await WasmNoiseFactory();
   // const { Field, __wbindgen_string_new } = noise || {};
-  const { Field } = noise || {};
+  // const { Field } = noise || {};
+  const Field: FieldType = noise.Field || {};
 
   // @todo
   // TS2339: Property 'strokeStyle' does not exist on type 'HTMLCanvasElement'.

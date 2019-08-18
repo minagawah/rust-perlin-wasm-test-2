@@ -4,10 +4,11 @@ export const getIndex: Function = ({ rows = 0, row = 0, col = 0 }): number => {
   return row * rows + col;
 };
 
-export const memory: Function = async (): Promise<any> => {
-  const { memory } = await import('../../wasm-noise/pkg/index_bg.wasm') || {};
-  return memory;
-};
+// export const memory: Function = async (): Promise<any> => {
+//   const wasm = await import('../../wasm-noise/pkg/index_bg.wasm') || {};
+//   const memory: any = wasm.memory || {};
+//   return memory;
+// };
 
 export default async function factory (): Promise<any> {
   if (!instance) {

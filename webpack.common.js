@@ -48,8 +48,20 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
+        exclude: /node_modules/,
         options: {
-          transpileOnly: true
+          // @todo
+          // In case you want to dynamically import
+          // a future module which does not yet exist,
+          // an ugly workaround is to have `transpileOnly`
+          // which basically tells TypeScript not to face
+          // the issue at all...
+          // --------------------------------------------
+          // transpileOnly: true,
+          // --------------------------------------------
+          compilerOptions: {
+            'sourceMap': true,
+          },
         }
       },
       {

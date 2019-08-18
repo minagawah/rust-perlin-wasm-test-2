@@ -1,4 +1,4 @@
-import { Vec2 } from './Vec2';
+import Victor from 'victor';
 
 export interface Point2 {
   x: number;
@@ -6,8 +6,8 @@ export interface Point2 {
 }
 
 export interface Rect {
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
   width: number;
   height: number;
 }
@@ -19,7 +19,7 @@ export interface Arc {
 }
 
 export interface Particle {
-  pos: Vec2;
+  pos: Victor;
   update: Function;
   draw: Function;
 }
