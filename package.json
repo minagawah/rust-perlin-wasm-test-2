@@ -24,7 +24,7 @@
     "noise",
     "perlin"
   ],
-  "author": "minagawah <minagawa@tokyo800.jp>",
+  "author": "mina <mina@tokyo800.jp>",
   "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/minagawah/rust-perlin-wasm-test-2/issues"
