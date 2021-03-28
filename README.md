@@ -15,6 +15,11 @@ Using wasm-pack to play with Perlin noise.
 
 [View Demo](http://tokyo800.jp/minagawah/rust-perlin-wasm-test-2/)
 
+**IMPORTANT:**  
+Please note **THIS IS VERY OLD**.  
+Check out my [perlin-experiment](https://github.com/minagawah/perlin-experiment).  
+It is doing something different, but has the latest setup.
+
 <a id="about"></a>
 ## 1. About
 
