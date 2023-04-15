@@ -7,7 +7,7 @@ This is very old...
 If you want the lates WASM app using Perlin noise,
 check out [perlin-experiment-2](https://github.com/minagawah/perlin-experiment-2).
 Instead of using JS for canvas animation, the whole thing
-is written in WASM for this new version.  
+is written in WASM for this new version.
 Or, if you want a simpler WASM app for your learning, check out
 [very-simple-wasm-2023](https://github.com/minagawah/very-simple-wasm-2023).
 
